@@ -4,13 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"github.com/deckarep/gosx-notifier"
+	"os"
+	"strings"
 	"time"
 )
 
 const (
 	tomato       = "🍅 "
 	clearScreen  = "\033[2J\033[0;0H\n"
-	formatLine   = "\033[2J\033[0;0H%s: %s\n"
+	formatLine   = "\033[2J\033[0;0H%s: %s\n%s"
 	finishedLine = "\033[2J\033[0;0HYou're done!\n"
 )
 
@@ -38,6 +40,11 @@ func finishTimer() {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Println("Any additional arguments will be printed to remind you what you're working on")
+	}
 	flag.Parse()
 
 	duration := time.Duration(*pomodoroLength) * time.Minute
@@ -57,7 +64,7 @@ func main() {
 				return
 			}
 
-			fmt.Printf(formatLine, tomato, durationToReadableMinutes(duration))
+			fmt.Printf(formatLine, tomato, durationToReadableMinutes(duration), strings.Join(flag.Args(), " "))
 		}
 	}
 }
